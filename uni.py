@@ -133,5 +133,4 @@ def menu_principal():
         else:
             print("Opção inválida. Tente novamente.\n")
 
-if _name_ == "_main_":
-    menu_principal()
+menu_principal()
