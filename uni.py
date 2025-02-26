@@ -1,74 +1,137 @@
-import random
+#primeira parte
+import csv
 
+arquivo = "encomendas.csv" 
+situação = ["Postado", "Em trânsito", "Entregue", "Não entregue"]
 
-#1º armazenar funções, listas e matrizes
-situação_objetos = ["Postado", "Não encontrado", "Entregue", "Não entregue"]
+def carregar_encomendas():
+    try:
+        with open(arquivo, mode='r', newline='') as file:
+            reader = csv.reader(file)
+            return [linha for linha in reader][1:]  # Ignora cabeçalho
+    except FileNotFoundError:
+        return []
 
-def registrar_encomenda():
-     codigo = int(input("Insira o código do objeto: "))
-     novo_registro = {"codigo": codigo, "status": "Postado"}
-     
+def salvar_encomendas(encomendas):
+    with open(arquivo, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(["codigo", "status"])  # write é um método usado para gravar dados em arquivos, utilizado para escrever strings em arquivos de texto
+        writer.writerows(encomendas) #O writer.writerows() é um método do módulo csv em Python que escreve múltiplas linhas em um arquivo CSV de uma vez.
 
+def validar_codigo(codigo):
+    return codigo.isdigit() and len(codigo) == 5  #isdigit: verifica se todos os dígitos são números
 
-def conferencia_eletronica():
-     
-def remover_encomenda():
+#segunda parte ->  ATRIBUIÇÕES DOS FUNCIONÁRIOS 
 
+def registrar_encomenda(encomendas):
+    codigo = input("Digite o código do produto (5 números): ").strip()
+    
+    if not validar_codigo(codigo):
+        print("Código inválido! Deve conter exatamente 5 números.\n")
+        return
 
-def gerar_codigo():
-    codigo = [0, 0, 0, 0, 0]
-    for i in range(len(codigo)):
-        codigo[i] = random.randint(0, 9)
+    encomendas.append([codigo, "Postado"])
+    salvar_encomendas(encomendas)
+    print(f"\nEncomenda registrada com sucesso! Código: {codigo}\n")
 
+def conferir_encomendas(encomendas):
+    if not encomendas:
+        print("\nNenhuma encomenda registrada.\n")
+    else:
+        print("\nLista de encomendas:")
+        for encomenda in encomendas:
+            print(f"Código: {encomenda[0]} | Status: {encomenda[1]}")
+        print()
 
+def atualizar_status(encomendas):
+    codigo = input("Digite o código de rastreamento: ").strip()
 
-#2º criar parte do funcionário
-def menu_funcionario():
-    print('--- 🔧 MENU FUNCIONÁRIO 🔧 ---')
+    for i in range(len(encomendas)):
+        if encomendas[i][0] == codigo:
+            print(f"\nStatus atual: {encomendas[i][1]}")
+            print("1 - Atualizar status")
+            print("2 - Remover encomenda")
+            opcao = input("Escolha uma opção: ")
+
+            if opcao == "1":
+                novo_status = input(f"Novo status ({', '.join(situação)}): ").strip() #join() é usado para juntar os elementos de uma lista em uma string.
+                if novo_status in situação:
+                    encomendas[i][1] = novo_status
+                    salvar_encomendas(encomendas)
+                    print("Status atualizado com sucesso!\n")
+                else:
+                    print("Status inválido.\n")
+            elif opcao == "2":
+                del encomendas[i]
+                salvar_encomendas(encomendas)
+                print("Encomenda removida com sucesso!\n")
+            return
+    
+    print("Código não encontrado.\n")
+
+#terceira parte -> ATRIBUIÇÕES DOS CLIENTES
+
+def rastrear_encomenda(encomendas):
+    codigo = input("Digite o código de rastreamento: ").strip()
+
+    for encomenda in encomendas:
+        if encomenda[0] == codigo:
+            print(f"\nEncomenda encontrada!\nCódigo: {codigo} | Status: {encomenda[1]}\n")
+            return
+    
+    print("Código não encontrado. Verifique e tente novamente.\n")
+
+#quarta parte -> OPÇÕES DO FUNCIONÁRIO
+
+def exibir_menu_funcionario():
+    print("\nMENU FUNCIONÁRIO")
     print("1. Registrar nova encomenda")
     print("2. Conferência eletrônica (ver todas as encomendas)")
     print("3. Atualizar status ou remover encomenda")
     print("4. Voltar ao menu principal")
-    entrada_usuario = ('Escolha uma opção: ')
 
-    if entrada_usuario == 1:
-         registrar_encomenda()
-    elif entrada_usuario == 2:
-         conferencia_eletronica()
-    elif entrada_usuario == 3:
-         remover_encomenda()
-    elif entrada_usuario == 4:
-         menu_principal()
-         
-#3º criar parte do cliente 
-
-def menu_cliente():
-    codigo = input("Digite o código de rastreamento do seu produto: ").strip
-    for encomenda in encomendas:
-        if encomenda["codigo"] == codigo:
-            print(f"\nSeu objeto foi localizado!\nCódigo: {codigo} | Status: {encomenda['status']}\n")
-            return
-    print("O código fornecido não encontrado. Verifique e tente novamente.\n")
-
-#4º menu
-def menu_principal():
-    print("\n--- 📦 Bem-vindo ao UniTrack! 📦 ---")
-    print("Nosso sistema permite rastrear e gerenciar suas encomendas de forma fácil e rápida.")
-
+def menu_funcionario(encomendas):
     while True:
-        print("\nVocê é:")
-        print("1. Cliente")
-        print("2. Funcionário")
-        print("3. Sair")
-
+        exibir_menu_funcionario()
         opcao = input("Escolha uma opção: ")
 
         if opcao == "1":
-                menu_cliente()
+            registrar_encomenda(encomendas)
         elif opcao == "2":
-                menu_funcionario()
+            conferir_encomendas(encomendas)
         elif opcao == "3":
-            print("👋 Obrigado por usar o UniTrack. Volte sempre!\n")
+            atualizar_status(encomendas)
+        elif opcao == "4":
             break
         else:
-            print("❌ Opção inválida. Tente novamente.\n")
+            print("Opção inválida. Tente novamente.\n")
+
+#quinta parte -> ENTRADA
+
+def exibir_menu_principal():
+    print("\nBem-vindo ao UniTrack!")
+    print("Nosso sistema permite rastrear e gerenciar suas encomendas de forma fácil e rápida.")
+    print("\nVocê é:")
+    print("1. Cliente")
+    print("2. Funcionário")
+    print("3. Sair")
+
+def menu_principal():
+    encomendas = carregar_encomendas()
+
+    while True:
+        exibir_menu_principal()
+        opcao = input("Escolha uma opção: ")
+
+        if opcao == "1":
+            rastrear_encomenda(encomendas)
+        elif opcao == "2":
+            menu_funcionario(encomendas)
+        elif opcao == "3":
+            print("Obrigado por usar o UniTrack. Até mais!\n")
+            break
+        else:
+            print("Opção inválida. Tente novamente.\n")
+
+if _name_ == "_main_":
+    menu_principal()
