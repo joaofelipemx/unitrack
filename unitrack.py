@@ -1,4 +1,3 @@
-#primeira parte
 import csv
 
 arquivo = "encomendas.csv" 
@@ -8,20 +7,18 @@ def carregar_encomendas():
     try:
         with open(arquivo, mode='r', newline='') as file:
             reader = csv.reader(file)
-            return [linha for linha in reader][1:]  # Ignora cabeçalho
+            return [linha for linha in reader][1:]
     except FileNotFoundError:
         return []
 
 def salvar_encomendas(encomendas):
     with open(arquivo, mode='w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(["codigo", "status"])  # write é um método usado para gravar dados em arquivos, utilizado para escrever strings em arquivos de texto
-        writer.writerows(encomendas) #O writer.writerows() é um método do módulo csv em Python que escreve múltiplas linhas em um arquivo CSV de uma vez.
+        writer.writerow(["codigo", "status"])  
+        writer.writerows(encomendas)
 
 def validar_codigo(codigo):
-    return codigo.isdigit() and len(codigo) == 5  #isdigit: verifica se todos os dígitos são números
-
-#segunda parte ->  ATRIBUIÇÕES DOS FUNCIONÁRIOS 
+    return codigo.isdigit() and len(codigo) == 5
 
 def registrar_encomenda(encomendas):
     codigo = input("Digite o código do produto (5 números): ").strip()
@@ -54,7 +51,7 @@ def atualizar_status(encomendas):
             opcao = input("Escolha uma opção: ")
 
             if opcao == "1":
-                novo_status = input(f"Novo status ({', '.join(situação)}): ").strip() #join() é usado para juntar os elementos de uma lista em uma string.
+                novo_status = input(f"Novo status ({', '.join(situação)}): ").strip() 
                 if novo_status in situação:
                     encomendas[i][1] = novo_status
                     salvar_encomendas(encomendas)
@@ -69,8 +66,6 @@ def atualizar_status(encomendas):
     
     print("Código não encontrado.\n")
 
-#terceira parte -> ATRIBUIÇÕES DOS CLIENTES
-
 def rastrear_encomenda(encomendas):
     codigo = input("Digite o código de rastreamento: ").strip()
 
@@ -80,8 +75,6 @@ def rastrear_encomenda(encomendas):
             return
     
     print("Código não encontrado. Verifique e tente novamente.\n")
-
-#quarta parte -> OPÇÕES DO FUNCIONÁRIO
 
 def exibir_menu_funcionario():
     print("\nMENU FUNCIONÁRIO")
@@ -105,8 +98,6 @@ def menu_funcionario(encomendas):
             break
         else:
             print("Opção inválida. Tente novamente.\n")
-
-#quinta parte -> ENTRADA
 
 def exibir_menu_principal():
     print("\nBem-vindo ao UniTrack!")
@@ -133,4 +124,5 @@ def menu_principal():
         else:
             print("Opção inválida. Tente novamente.\n")
 
-menu_principal()
+menu = menu_principal()
+print(menu)
